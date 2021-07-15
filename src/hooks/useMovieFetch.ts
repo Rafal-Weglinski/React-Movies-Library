@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import API from '../API';
+import { Movie, Cast, Crew } from '../API';
 //Helpers
 import { isPersistedState } from '../helpers';
 
-export const useMovieFetch = (movieId) => {
-  const [state, setstate] = useState({});
+//Types
+export type MovieState = Movie & { actors: Cast[]; directors: Crew[] };
+
+export const useMovieFetch = (movieId: number) => {
+  const [state, setstate] = useState<MovieState>({} as MovieState);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -14,7 +18,7 @@ export const useMovieFetch = (movieId) => {
         setLoading(true);
         setError(false);
 
-        const movie = await API.fetchMovie(movieId);
+        const movie = await API.fetchMovie(movieId.toString());
         const credits = await API.fetchCredits(movieId);
         //Get directors
         const directors = credits.crew.filter(
@@ -33,7 +37,7 @@ export const useMovieFetch = (movieId) => {
       }
     };
 
-    const sessionState = isPersistedState(movieId);
+    const sessionState = isPersistedState(movieId.toString());
 
     if (sessionState) {
       setstate(sessionState);
@@ -46,7 +50,7 @@ export const useMovieFetch = (movieId) => {
 
   //Write to sessionStorage
   useEffect(() => {
-    sessionStorage.setItem(movieId, JSON.stringify(state));
+    sessionStorage.setItem(movieId.toString(), JSON.stringify(state));
   }, [movieId, state]);
 
   return { state, loading, error };

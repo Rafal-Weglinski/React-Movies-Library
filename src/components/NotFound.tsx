@@ -1,5 +1,5 @@
 import React from 'react';
 
-const NotFound = () => <div>Movie</div>;
+const NotFound: React.FC = () => <div>Movie</div>;
 
 export default NotFound;
